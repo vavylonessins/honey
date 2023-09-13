@@ -1,0 +1,145 @@
+# Error codes
+SUCCESS_CODE = 0
+WARNINGS_CODE = 1
+ERRORS_CODE = 2
+CRUSH_CODE = 3
+
+# Token types
+NONE = "NONE"
+NAME = "NAME"
+COLON = "COLON"
+EQUAL = "EQUAL"
+INT = "INT"
+NE = "NE"
+ARL = "ARL"
+CUL = "CUL"
+BUX = "BUX"
+PAL = "PAL"
+PAR = "PAR"
+STRING = "STRING"
+CUR = "CUR"
+GT = "GT"
+LT = "LT"
+GE = "GE"
+LE = "LE"
+ARR = "ARR"
+SHL = "SHL"
+SHR = "SHR"
+BLL = "BLL"
+BLR = "BLR"
+PLUS = "PLUS"
+MINUS = "MINUS"
+MULT = "MULT"
+DIV = "DIV"
+POW = "POW"
+IDIV = "IDIV"
+MOD = "MOD"
+OR = "OR"
+AND = "AND"
+XOR = "XOR"
+NOT = "NOT"
+NEG = "NEG"
+BINNEG = "BINNEG"
+RESERVED = "RESERVED"
+ARRAYTYPE = "ARRAYTYPE"
+SO = "SO"
+ASSIGN = "ASSIGN"
+MINUSASSIGN = "MINUSASSIGN"
+PLUSASSIGN = "PLUSASSIGN"
+INC = "INC"
+DEC = "DEC"
+NEGASSIGN = "NEGASSIGN"
+SYSTAG = "SYSTAG"
+POWASSIGN = "POWASSIGN"
+POW = "POW"
+MULASSIGN = "MULASSIGN"
+MUL = "MUL"
+IDIVASSIGN = "IDIVASSIGN"
+DIVASSIGN = "DIVASSIGN"
+MODAPPLY = "MODAPPLY"
+MODASSIGN = "MODASSIGN"
+BOOLOR = "BOOLOR"
+ORASSIGN = "ORASSIGN"
+BOOLXOR = "BOOLXOR"
+XORASSIGN = "XORASSIGN"
+BOOLAND = "BOOLAND"
+ANDASSIGN = "ANDASSIGN"
+COMMA = "COMMA"
+DOT = "DOT"
+RANGE = "RANGE"
+ELLIPSE = "ELLIPSE"
+
+# Parser consts
+ROOT = "ROOT"
+CLASS = "CLASS"
+CLASS_NAME = "CLASS_NAME"
+CLASS_BODY_OR_SUPER = "CLASS_BODY_OR_SUPER"
+CLASS_SUPER = "CLASS_SUPER"
+CLASS_BODY = "CLASS_BODY"
+CLASS_OPEN_BODY = "CLASS_OPEN_BODY"
+FN = "FN"
+FN_NAME = "FN_NAME"
+FN_OPEN_ARGS = "FN_OPEN_ARGS"
+FN_ARG_NAME_OR_ARGS_CLOSE = "FN_ARG_NAME_OR_ARGS_CLOSE"
+FN_ARG_COLON = "FN_ARG_COLON"
+FN_ARG_TYPE = "FN_ARG_TYPE"
+FN_ARG_COMMA_OR_ARRAY_OR_CLOSE = "FN_ARG_COMMA_OR_ARRAY_OR_CLOSE"
+FN_ARG_INT_OR_CLOSE_ARRAY = "FN_ARG_INT_OR_CLOSE_ARRAY"
+FN_ARG_COMMA_OR_CLOSE = "FN_ARG_COMMA_OR_CLOSE"
+FN_BODY_OPEN_OR_ARR = "FN_BODY_OPEN_OR_ARR"
+FN_ARG_CLOSE_ARRAY = "FN_ARG_CLOSE_ARRAY"
+FN_BODY = "FN_BODY"
+FN_RTYPE = "FN_RTYPE"
+FN_OPEN_BODY = "FN_OPEN_BODY"
+IF_COND = "IF_COND"
+FREE_NAME = "FREE_NAME"
+UNLINK_NAME = "UNLINK_NAME"
+RETURN_VALUE = "RETURN_VALUE"
+WHILE_VALUE = "WHILE_VALUE"
+CALL_OR_DEFINE_OR_ASSIGN = "CALL_OR_DEFINE_OR_ASSIGN"
+DEFINITION = "DEFINITION"
+CALL = "CALL"
+CALL_ARGS = "CALL_ARGS"
+FN_BEGIN = "FN_BEGIN"
+CALL_COMMA_OR_CLOSE = "CALL_COMMA_OR_CLOSE"
+EXPR = "EXPR"
+EXPR_OP = "EXPR_OP"
+EXPR_CALL_OR_OP = "EXPR_CALL_OR_OP"
+CALL_END = "CALL_END"
+
+# Stack consts
+LITERAL = "L"
+
+# System data
+VERSION = "0.1.3a"
+REVISION = "r0067"
+STD = "HEP0"
+
+# Help page
+HELP = f"""
+Honey {VERSION} {REVISION} {STD} help page
+
+Usage: hny [options] file...
+
+Options:
+\t--help:  \tShows this page
+\t--debug: \tDeveloper option, enables debug mode in compiler. Not for regular use
+\t--fasm:  \tOutput is FASM code
+\t--hasm:  \tOutput is middle-language production
+\t-Wextra: \tEnables unnecessary warnings
+\t-Werror: \tHandles warnings as errors
+\t-Wno-|w|:\tDisables given warning, for instanse option "-Wno-unkseq" will
+\t         \tdisable warning about unknown escape sequences
+"""[1:]
+
+# Lexer constants
+ALPHA: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+DIGIT: str = "0123456789"
+ALNUM: str = DIGIT + ALPHA
+SPACE: str = " \b\r\a\v\n\t"
+
+# More system consts
+KNOWN_WARNINGS: dict = {
+    "unkseq": "Unknown sequense warning",
+}
+

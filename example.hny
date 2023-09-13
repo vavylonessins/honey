@@ -1,0 +1,16 @@
+format elf:x86:64 executable
+
+link "testlib.so" as clib
+
+
+extern char *c_str <- "c_str" from clib
+
+
+fn main() {
+	/* я хочу вывести в Honey строку из С */
+	string: str = c_str as str
+
+	print(string)
+}
+
+

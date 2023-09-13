@@ -1,0 +1,23 @@
+class Coin <- Sprite {
+	fn $new(pos: vec2) {
+		print("New coin created\n")
+		self.pos = pos
+	}
+
+	fn $on_body_entered(body: Node) {
+		if body.name == "Player" { print("Coin was collected\n")
+			body.coins++
+			free self
+		}
+	}
+
+	fn $free() {
+		free super
+		unlink pos, self
+	}
+
+	fn regular_method(a: int, b: float, c: str, d: int<>) -> str {
+		print("You can also create non-system methods without $ at beggining of name\n")
+		return "something for example"
+	}
+}
