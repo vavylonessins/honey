@@ -367,170 +367,173 @@ class Parser:
                 if tkn.value == "class":
                     log("Class definition")
                     stack.push(CLASS_NAME)
-            
-            elif stack.read() == CLASS_NAME:
-                if tkn.type != NAME:
-                    error("Syntax error", tkn, "Expected identifier")
-                log("Class name:", repr(tkn.value))
-                stack.shift(tkn.value, CLASS_BODY_OR_SUPER)
-            elif stack.read() == CLASS_BODY_OR_SUPER:
-                if tkn.type == ARL:
-                    log("Super-class definition")
-                    stack.write(CLASS_SUPER)
-                if tkn.type == CUL:
+                i += 1
+                continue
+                
+            match stack.read():
+                case CLASS_NAME:
+                    if tkn.type != NAME:
+                        error("Syntax error", tkn, "Expected identifier")
+                    log("Class name:", repr(tkn.value))
+                    stack.shift(tkn.value, CLASS_BODY_OR_SUPER)
+                case CLASS_BODY_OR_SUPER:
+                    if tkn.type == ARL:
+                        log("Super-class definition")
+                        stack.write(CLASS_SUPER)
+                    if tkn.type == CUL:
+                        stack.write(CLASS_BODY)
+                case CLASS_SUPER:
+                    if tkn.type != NAME:
+                        error("Syntax error", tkn)
+                    log("Super-class name:", repr(tkn.value))
+                    stack.shift(tkn.value, CLASS_OPEN_BODY)
+                case CLASS_OPEN_BODY:
+                    if tkn.type != CUL:
+                        error("Syntax error", tkn, "Expected '{'")
+                    log("Opening class body")
                     stack.write(CLASS_BODY)
-            elif stack.read() == CLASS_SUPER:
-                if tkn.type != NAME:
-                    error("Syntax error", tkn)
-                log("Super-class name:", repr(tkn.value))
-                stack.shift(tkn.value, CLASS_OPEN_BODY)
-            elif stack.read() == CLASS_OPEN_BODY:
-                if tkn.type != CUL:
-                    error("Syntax error", tkn, "Expected '{'")
-                log("Opening class body")
-                stack.write(CLASS_BODY)
-            elif stack.read() == CLASS_BODY:
-                if tkn.value == "fn":
-                    log("Method definition")
-                    stack.push(FN_NAME)
-            elif stack.read() == FN_NAME:
-                if tkn.type not in (NAME, SYSTAG):
-                    error("Syntax error", tkn, "Expected identifier or '$'")
-                if tkn.type == SYSTAG:
-                    log("System method definition")
-                    stack.push(SYSTAG)
-                if tkn.type == NAME:
+                case CLASS_BODY:
+                    if tkn.value == "fn":
+                        log("Method definition")
+                        stack.push(FN_NAME)
+                case FN_NAME:
+                    if tkn.type not in (NAME, SYSTAG):
+                        error("Syntax error", tkn, "Expected identifier or '$'")
+                    if tkn.type == SYSTAG:
+                        log("System method definition")
+                        stack.push(SYSTAG)
+                    if tkn.type == NAME:
+                        log("Function name:", tkn.value)
+                        stack.shift(tkn.value, FN, FN_OPEN_ARGS)
+                case SYSTAG:
+                    if tkn.type != NAME:
+                        error("Syntax error", tkn, "Expected identifier")
                     log("Function name:", tkn.value)
-                    stack.shift(tkn.value, FN, FN_OPEN_ARGS)
-            elif stack.read() == SYSTAG:
-                if tkn.type != NAME:
-                    error("Syntax error", tkn, "Expected identifier")
-                log("Function name:", tkn.value)
-                stack.pop()
-                stack.shift("$"+tkn.value, FN, FN_OPEN_ARGS)
-            elif stack.read() == FN_OPEN_ARGS:
-                if tkn.type != PAL:
-                    error("Syntax error", tkn, "Expected '('")
-                stack.write(FN_ARG_NAME_OR_ARGS_CLOSE)
-            elif stack.read() == FN_ARG_NAME_OR_ARGS_CLOSE:
-                if tkn.type not in (NAME, PAR):
-                    error("Syntax error", tkn, "Expected identifier")
-                if tkn.type == NAME:
-                    log("Argument name:", tkn.value)
-                    stack.shift(tkn.value, FN_ARG_COLON)
-                elif tkn.name == PAR:
-                    log("End of args list")
-                    ...
-            elif stack.read() == FN_ARG_COLON:
-                if tkn.type != COLON:
-                    error("Syntax error", tkn, "Expected ':'")
-                stack.write(FN_ARG_TYPE)
-            elif stack.read() == FN_ARG_TYPE:
-                if tkn.type != NAME:
-                    error("Syntax error", tkn, "Expected identifier")
-                stack.shift({"type": tkn.value, "array": False, "len": -1}, FN_ARG_COMMA_OR_ARRAY_OR_CLOSE)
-            elif stack.read() == FN_ARG_COMMA_OR_ARRAY_OR_CLOSE:
-                if tkn.type == LT:
                     stack.pop()
-                    log("Arg type is array of", stack.read())
-                    stack.read["array"] = True
-                    stack.push(FN_ARG_INT_OR_CLOSE_ARRAY)
-                elif tkn.type == COMMA:
-                    stack.pop()
-                    log("Arg type is", stack.read())
-                    stack.push(FN_ARG_COMMA_OR_CLOSE)
-                if tkn.type == PAR:
-                    log("No more args")
-                    stack.write(FN_BODY_OPEN_OR_ARR)
-                else:
-                    error("Syntax error", tkn, "Expected ',' or ')' or '<'")
-            elif stack.read() == FN_ARG_COMMA_OR_CLOSE:
-                if tkn.type == COMMA:
-                    log("More args was provided")
-                    stack.write(FN_BODY_OPEN_OR_ARR)
-                elif tkn.type == PAR:
-                    log("No more args")
-                else:
-                    error("Syntax error", tkn, "Expected ',' or ')'")
-            elif stack.read() == FN_ARG_INT_OR_CLOSE_ARRAY:
-                if tkn.type == INT:
-                    log("Array len =", tkn.value)
-                    stack.read()["len"] = eval(tkn.value)
-                    stack.shift(tkn.value, FN_ARG_CLOSE_ARRAY)
-                elif tkn.type == GT:
-                    log("Array len was not provided")
-                    stack.shift("-1", FN_ARG_COMMA_OR_CLOSE)
-                else:
-                    error("Syntax error", tkn, "Expected positive integer or '>'")
-            elif stack.read() == FN_ARG_CLOSE_ARRAY:
-                if tkn.type == GT:
-                    stack.shift(tkn.value, FN_ARG_COMMA_OR_CLOSE)
-                else:
-                    error("Syntax error", tkn, "Expected '>'")
-            elif stack.read() == FN_BODY_OPEN_OR_ARR:
-                if tkn.type == CUL:
-                    stack.shift(FN_BEGIN, FN_BODY)
-                elif tkn.type == ARR:
-                    stack.write(FN_RTYPE)
-                else:
-                    error("Syntax error", tkn, "Expected '->' or '{'")
-            elif stack.read() == FN_RTYPE:
-                if tkn.type == NAME:
-                    stack.shift(tkn.value, FN_OPEN_BODY)
-                else:
-                    error("Syntax error", tkn, "Expected '->' or '{'")
-            elif stack.read() == FN_BODY:
-                if tkn.type == NAME:
-                    if tkn.value == "if":
-                        stack.push(IF_COND)
-                    elif tkn.value == "free":
-                        stack.push(FREE_NAME)
-                    elif tkn.value == "unlink":
-                        stack.push(UNLINK_NAME)
-                    elif tkn.value == "return":
-                        stack.push(RETURN_VALUE)
-                    elif tkn.value == "while":
-                        stack.push(WHILE_VALUE)
+                    stack.shift("$"+tkn.value, FN, FN_OPEN_ARGS)
+                case FN_OPEN_ARGS:
+                    if tkn.type != PAL:
+                        error("Syntax error", tkn, "Expected '('")
+                    stack.write(FN_ARG_NAME_OR_ARGS_CLOSE)
+                case FN_ARG_NAME_OR_ARGS_CLOSE:
+                    if tkn.type not in (NAME, PAR):
+                        error("Syntax error", tkn, "Expected identifier")
+                    if tkn.type == NAME:
+                        log("Argument name:", tkn.value)
+                        stack.shift(tkn.value, FN_ARG_COLON)
+                    elif tkn.name == PAR:
+                        log("End of args list")
+                        ...
+                case FN_ARG_COLON:
+                    if tkn.type != COLON:
+                        error("Syntax error", tkn, "Expected ':'")
+                    stack.write(FN_ARG_TYPE)
+                case FN_ARG_TYPE:
+                    if tkn.type != NAME:
+                        error("Syntax error", tkn, "Expected identifier")
+                    stack.shift({"type": tkn.value, "array": False, "len": -1}, FN_ARG_COMMA_OR_ARRAY_OR_CLOSE)
+                case FN_ARG_COMMA_OR_ARRAY_OR_CLOSE:
+                    if tkn.type == LT:
+                        stack.pop()
+                        log("Arg type is array of", stack.read())
+                        stack.read["array"] = True
+                        stack.push(FN_ARG_INT_OR_CLOSE_ARRAY)
+                    elif tkn.type == COMMA:
+                        stack.pop()
+                        log("Arg type is", stack.read())
+                        stack.push(FN_ARG_COMMA_OR_CLOSE)
+                    elif tkn.type == PAR:
+                        log("No more args")
+                        stack.write(FN_BODY_OPEN_OR_ARR)
                     else:
-                        stack.shift(tkn.value, CALL_OR_DEFINE_OR_ASSIGN)
-            elif stack.read() == CALL_OR_DEFINE_OR_ASSIGN:
-                if tkn.type == DOT:
-                    stack.pop()
-                    stack.write(stack.read()+"."+tokens[i+1].value)
-                    stack.push(CALL_OR_DEFINE_OR_ASSIGN)
-                    i+=1
-                elif tkn.type == ASSIGN:
-                    stack.write(ASSIGN)
-                elif tkn.type == COLON:
-                    stack.write(DEFINITION)
-                elif tkn.type == PAL:
-                    stack.shift(CALL_ARGS, EXPR)
-                else:
-                    error("Syntax error", tkn, "Expected '.' or '?=' or '=' or '??' or '('")
-            elif stack.read() == EXPR:
-                if tkn.type == STRING:
-                    stack.pop()
-                    stack.shift({"class": LITERAL, "type": STRING, "value": tkn.value}, stack.pop(), EXPR_OP)
-                elif tkn.type == INT:
-                    stack.shift({"class": LITERAL, "type": INT, "value": tkn.value}, stack.pop(), EXPR_OP)
-                elif tkn.type == ELLIPSE:
-                    stack.shift({"class": LITERAL, "type": ELLIPSE, "value": tkn.value}, stack.pop(), EXPR_OP)
-                elif tkn.type == NAME:
-                    stack.shift({"class": LITERAL, "type": ELLIPSE, "value": tkn.value}, stack.pop(), EXPR_CALL_OR_OP)
-                else:
-                    stack.pop()
-            elif stack.read() == EXPR_OP:
-                if tkn.type == PLUS:
-                    log("Plus")
-                else:
-                    stack.pop()
-                    i-=1
-            elif stack.read() == CALL_ARGS:
-                if tkn.type == COMMA:
-                    stack.push(EXPR)
-                elif tkn.type == PAR:
+                        error("Syntax error", tkn, "Expected ',' or ')' or '<'")
+                case FN_ARG_COMMA_OR_CLOSE:
+                    if tkn.type == COMMA:
+                        log("More args was provided")
+                        stack.write(FN_BODY_OPEN_OR_ARR)
+                    elif tkn.type == PAR:
+                        log("No more args")
+                    else:
+                        error("Syntax error", tkn, "Expected ',' or ')'")
+                case FN_ARG_INT_OR_CLOSE_ARRAY:
+                    if tkn.type == INT:
+                        log("Array len =", tkn.value)
+                        stack.read()["len"] = eval(tkn.value)
+                        stack.shift(tkn.value, FN_ARG_CLOSE_ARRAY)
+                    elif tkn.type == GT:
+                        log("Array len was not provided")
+                        stack.shift("-1", FN_ARG_COMMA_OR_CLOSE)
+                    else:
+                        error("Syntax error", tkn, "Expected positive integer or '>'")
+                case FN_ARG_CLOSE_ARRAY:
+                    if tkn.type == GT:
+                        stack.shift(tkn.value, FN_ARG_COMMA_OR_CLOSE)
+                    else:
+                        error("Syntax error", tkn, "Expected '>'")
+                case FN_BODY_OPEN_OR_ARR:
+                    if tkn.type == CUL:
+                        stack.shift(FN_BEGIN, FN_BODY)
+                    elif tkn.type == ARR:
+                        stack.write(FN_RTYPE)
+                    else:
+                        error("Syntax error", tkn, "Expected '->' or '{'")
+                case FN_RTYPE:
+                    if tkn.type == NAME:
+                        stack.shift(tkn.value, FN_OPEN_BODY)
+                    else:
+                        error("Syntax error", tkn, "Expected '->' or '{'")
+                case FN_BODY:
+                    if tkn.type == NAME:
+                        if tkn.value == "if":
+                            stack.push(IF_COND)
+                        elif tkn.value == "free":
+                            stack.push(FREE_NAME)
+                        elif tkn.value == "unlink":
+                            stack.push(UNLINK_NAME)
+                        elif tkn.value == "return":
+                            stack.push(RETURN_VALUE)
+                        elif tkn.value == "while":
+                            stack.push(WHILE_VALUE)
+                        else:
+                            stack.shift(tkn.value, CALL_OR_DEFINE_OR_ASSIGN)
+                case CALL_OR_DEFINE_OR_ASSIGN:
+                    if tkn.type == DOT:
+                        stack.pop()
+                        stack.write(stack.read()+"."+tokens[i+1].value)
+                        stack.push(CALL_OR_DEFINE_OR_ASSIGN)
+                        i+=1
+                    elif tkn.type == ASSIGN:
+                        stack.write(ASSIGN)
+                    elif tkn.type == COLON:
+                        stack.write(DEFINITION)
+                    elif tkn.type == PAL:
+                        stack.shift(CALL_ARGS, EXPR)
+                    else:
+                        error("Syntax error", tkn, "Expected '.' or '?=' or '=' or '??' or '('")
+                case EXPR:
+                    if tkn.type == STRING:
+                        stack.pop()
+                        stack.shift({"class": LITERAL, "type": STRING, "value": tkn.value}, stack.pop(), EXPR_OP)
+                    elif tkn.type == INT:
+                        stack.shift({"class": LITERAL, "type": INT, "value": tkn.value}, stack.pop(), EXPR_OP)
+                    elif tkn.type == ELLIPSE:
+                        stack.shift({"class": LITERAL, "type": ELLIPSE, "value": tkn.value}, stack.pop(), EXPR_OP)
+                    elif tkn.type == NAME:
+                        stack.shift({"class": LITERAL, "type": ELLIPSE, "value": tkn.value}, stack.pop(), EXPR_CALL_OR_OP)
+                    else:
+                        stack.pop()
+                case EXPR_OP:
+                    if tkn.type == PLUS:
+                        log("Plus")
+                    else:
+                        stack.pop()
+                        i-=1
+                case CALL_ARGS:
+                    if tkn.type == COMMA:
+                        stack.push(EXPR)
+                case PAR:
                     stack.shift(CALL_END, FN_BODY)
-                else:
+                case _:
                     error("Syntax error", tkn, "Expected ',' or ')'")
             i += 1
 
