@@ -17,28 +17,28 @@ typedef struct Stack {
     struct Stack * next;
 } stack;
 
-stack new_stack() {
-    stack S;
-    S.data = NULL;
-    S.next = NULL;
+stack * new_stack() {
+    stack * S = (stack *) malloc(sizeof(stack));
+    // S->data = NULL;
+    // S->next = NULL;
     return S;
 }
 
 char is_emptyCh(stack* S) {
-    return !(S->data == 0);
+    return (S->data == NULL);
 }
 
-void pushCh(stack )
-{
+stack * pushCh(stack* S, char* str) {
+    stack * K = new_stack();
+    K->data = str;
+    K->next = S;
+    return S;
+}
+
+void popCh() {
     
 }
 
-void popCh()
-{
-    
-}
-
-void showCh()
-{
+void readCh() {
     
 }
