@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 struct Token {
     char* type;
     char* value;
@@ -13,7 +15,7 @@ struct Token {
 // #define STACK_SIZE 1000
 
 typedef struct Stack { 
-    char* data
+    char* data;
     struct Stack * next;
 } stack;
 
@@ -32,7 +34,7 @@ void pushCh(stack* S, char* str) {
     stack * K = new_stack();
     K->data = str;
     K->next = S;
-    S = K;
+    *S = *K;
 }
 
 stack * popCh(stack* S) {
