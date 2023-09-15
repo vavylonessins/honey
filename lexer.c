@@ -19,8 +19,8 @@ typedef struct Stack {
 
 stack * new_stack() {
     stack * S = (stack *) malloc(sizeof(stack));
-    // S->data = NULL;
-    // S->next = NULL;
+    S->data = NULL;
+    S->next = NULL;
     return S;
 }
 
@@ -28,14 +28,14 @@ char is_emptyCh(stack* S) {
     return (S->data == NULL);
 }
 
-stack * pushCh(stack* S, char* str) {
+void pushCh(stack* S, char* str) {
     stack * K = new_stack();
     K->data = str;
     K->next = S;
-    return S;
+    S = K;
 }
 
-void popCh() {
+stack * popCh(stack* S) {
     
 }
 
