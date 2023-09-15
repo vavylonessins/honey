@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 struct Token {
@@ -37,10 +38,12 @@ void pushCh(stack* S, char* str) {
     *S = *K;
 }
 
-stack * popCh(stack* S) {
-    
+char* popCh(stack* S) {
+    char* K = S->data;
+    *S = S->next;
+    return K;
 }
 
-void readCh() {
-    
+char* readCh(stack* S) {
+    return S->data;
 }
