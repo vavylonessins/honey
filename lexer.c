@@ -20,24 +20,29 @@ typedef struct Stack {
     struct Stack * next;
 } stack;
 
-stack * new_stack() {
+stack * new_stack(char* data_t, stack* stack_t) {
     stack * S = (stack *) malloc(sizeof(stack));
-    S->data = NULL;
-    S->next = NULL;
+    S->data = data_t;
+    S->next = stack_t;
     return S;
+}
+
+stack * empty_stack() {
+    return new_stack(NULL, NULL);
 }
 
 char is_emptyCh(stack* S) {
     return (S->data == NULL);
 }
 
-void pushCh(stack* S, char* str) {
-    stack * K = new_stack();
-    K->data = str;
-    K->next = S;
-    *S = *K;
+/* pushCh(&S, "string");
+ */
+void pushCh(stack** S, char* str) {
+    *S = new_stack(str, *S);
 }
 
+/* char* data = popCh(S);
+ */
 char* popCh(stack* S) {
     char* K = S->data;
     *S = S->next;
