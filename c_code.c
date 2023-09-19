@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define STACK_TYPE Token
+
 struct Token {
     char* type;
     char* value;
@@ -53,14 +55,12 @@ char* readCh(stack* S) {
     return S->data;
 }
 
-def lex(self) {
-    code = self.code
-
+??? lex(char* code) {
     int i;
 
-    for (i = 0;i < strlen();i++) {
+    for (i = 0;i < strlen(code);i++) {
         if code[i] in ALPHA:
-            temp = code[i]
+            temp = code[i];
             i++;
             while code[i] in ALNUM and len(temp) < 63:
                 temp += code[i]
