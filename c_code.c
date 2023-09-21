@@ -63,7 +63,7 @@ char strin(char c, char* str) {
 }
 
 ??? lex(char* code) {
-    int i;
+    int i, strnum = 0;
 
     for (i = 0;i < strlen(code);i++) {
         if strin(code[i], ALPHA) {
@@ -234,3 +234,5 @@ char strin(char c, char* str) {
         
         elif code[i] in "()[]{}":
             self.tokens.append(Token("PAL PAR BLL BLR CUL CUR".split()["()[]{}".index(code[i])], code[i], Pos(i, i)))
+
+        if (code[i] == '\n') strnum++;
