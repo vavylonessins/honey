@@ -1,7 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define STACK_TYPE Token
+void stacktrace(int exit_code, char* string, char* filename, int error_position) {
+    // todo switch with codes and colors
+    // printf(string);
+    // 10 is exit code for not implemented error messages
+    exit(exit_code);
+}
+
+// #define STACK_TYPE Token
 
 struct Token {
     char* type;
@@ -17,19 +24,19 @@ struct Token {
 
 // #define STACK_SIZE 1000
 
-typedef struct Stack { 
+typedef struct StackCh { 
     char* data;
-    struct Stack * next;
+    struct StackCh * next;
 } stack;
 
-stack * new_stack(char* data_t, stack* stack_t) {
+stack * new_stackCh(char* data_t, stack* stack_t) {
     stack * S = (stack *) malloc(sizeof(stack));
     S->data = data_t;
     S->next = stack_t;
     return S;
 }
 
-stack * empty_stack() {
+stack * empty_stackCh() {
     return new_stack(NULL, NULL);
 }
 
@@ -52,6 +59,44 @@ char* popCh(stack* S) {
 }
 
 char* readCh(stack* S) {
+    return S->data;
+}
+
+typedef struct TokenStack { 
+    Token* data;
+    struct TokenStack * next;
+} Tstack;
+
+Tstack * new_stackT(Token* data_t, Tstack* stack_t) {
+    Tstack * S = (Tstack *) malloc(sizeof(Tstack));
+    S->data = data_t;
+    S->next = stack_t;
+    return S;
+}
+
+Tstack * empty_stackT() {
+    return new_stack(NULL, NULL);
+}
+
+char is_emptyT(Tstack* S) {
+    return (S->data == NULL);
+}
+
+/* pushT(&S, token);
+ */
+void pushT(Tstack** S, Token* token) {
+    *S = new_stack(token, *S);
+}
+
+/* Token data = *popT(S);
+ */
+Token* popT(Tstack* S) {
+    Token* K = S->data;
+    *S = S->next;
+    return K;
+}
+
+Token* readT(Tstack* S) {
     return S->data;
 }
 
