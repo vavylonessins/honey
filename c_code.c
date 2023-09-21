@@ -13,8 +13,8 @@ void stacktrace(int exit_code, char* string, char* filename, int error_position)
 struct Token {
     char* type;
     char* value;
-    int x;
-    int y;
+    int start;
+    int end;
 
     // line len(code[:self.pos.start].splitlines())    
     // column len(code[:self.pos.start].splitlines()[-1])    
@@ -101,18 +101,24 @@ Token* readT(Tstack* S) {
 }
 
 char strin(char c, char* str) {
-    char i, out = 0;
-    for (i = 0; str[i] == "\0"; i++) 
+    int i, out = 0;
+    for (i = 0; str[i] == '\0'; i++) 
         if (str[i] == c) out = 1; 
     return out;
 }
 
-??? lex(char* code) {
-    int i, strnum = 0;
+char ** new_temp(int size) 
+    return (char **) malloc(size * sizeof(char));
 
-    for (i = 0;i < strlen(code);i++) {
+
+??? lex(char* code) {
+    int i = 0, tokcount = 0, strnum = 0;
+    Token* MST[2048] = { NULL };
+    char** temp = new_temp(128); // todo fix
+
+    for (;i < strlen(code);i++) {
         if strin(code[i], ALPHA) {
-            temp = code[i];
+            temp[0] = code[i];
             i++;
             while code[i] in ALNUM and len(temp) < 63:
                 temp += code[i]
@@ -131,8 +137,8 @@ char strin(char c, char* str) {
                 i-=1
                 self.tokens.append(Token(INT, temp, Pos(i-len(temp), i)))
         
-        elif code[i] == '"':
-            i+=1
+        elif code[i] == '\"':
+            i++;
             temp = ""
             while code[i] != '"':
                 if code[i] == "\\":
