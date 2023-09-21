@@ -55,11 +55,18 @@ char* readCh(stack* S) {
     return S->data;
 }
 
+char strin(char c, char* str) {
+    char i, out = 0;
+    for (i = 0; str[i] == "\0"; i++) 
+        if (str[i] == c) out = 1; 
+    return out;
+}
+
 ??? lex(char* code) {
     int i;
 
     for (i = 0;i < strlen(code);i++) {
-        if code[i] in ALPHA:
+        if strin(code[i], ALPHA) {
             temp = code[i];
             i++;
             while code[i] in ALNUM and len(temp) < 63:
@@ -68,7 +75,7 @@ char* readCh(stack* S) {
             else:
                 i--;
                 self.tokens.append(Token(NAME, temp, Pos(i-len(temp), i)))
-        
+        }
         elif code[i] in DIGIT and (code[i] != "0" or code[i+1] not in DIGIT):
             temp = code[i]
             i+=1
