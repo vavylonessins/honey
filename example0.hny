@@ -1,0 +1,51 @@
+format elf:x86:64 executable
+
+entry main
+
+link "testlib.so" as clib
+
+extern char* c_str <- "c_str" from clib
+
+; ; - comments for fun
+
+fn main() {
+	string: str = c_str as str
+	print(string)
+
+  i: int = 0
+  switch (i) {
+    case 0:
+      break
+    case in "12345\u0000\u0001\u0002":
+      print('\n')
+      break
+  }
+
+  coin1: Coin = Coin()
+  coin2: Coin = Coin()
+  window: Window = Window()
+  window.signal.connect(coin1)
+  window.signal.connect(coin2)
+}
+
+; Приблизительная реализация
+class Coin <- Sprite {
+  slots:
+    slot(int)
+
+	fn mainloop() {
+    i: int
+    await i = slot
+  }
+}
+
+
+class Window <- Sprite {
+  signals:
+    signal(int)
+
+	fn mainloop() {
+    async signal.sent(0)
+    async signal.sent(1)
+  }
+}
