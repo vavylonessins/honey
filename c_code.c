@@ -119,26 +119,26 @@ char strin(char c, char* str) {
 char ** new_temp(int size) 
     return (char **) malloc(size * sizeof(char));
 
+#define TEMPLEN 128
 
 ??? lex(char* code) {
-    int i = 0, tokcount = 0, strnum = 0;
+    int i, tokcount = 0, strnum = 0;
     Token* MST[2048] = { NULL };
-    char** temp = new_temp(128); // todo fix
+    char** temp = new_temp(TEMPLEN); // todo fix
 
-    for (;i < strlen(code);i++) {
-        if strin(code[i], ALPHA) {
+    for (i = 0; i < strlen(code); i++) {
+        if (strin(code[i], ALPHA)) {
             temp[0] = code[i];
             i++;
-            for (;strin(code[i], ALNUM) && strlen(temp) < 127; i++) {
+            for (;strin(code[i], ALNUM) && strlen(temp) < TEMPLEN; i++) {
                 temp += code[i];
             }
-            else:
-                i--;
-                self.tokens.append(Token(NAME, temp, Pos(i-len(temp), i)))
+            i--;
+            MST[tokcount++] = new_token(NAME, temp, i - strlen(temp), i)
         }
-        else if strin(code[i], DIGIT) and (code[i] != "0" || !strin(code[i+1], DIGIT) {
+        else if (strin(code[i], DIGIT) and (code[i] != "0" || !strin(code[i+1], DIGIT)) {
             temp[0] = code[i];
-            i+=1
+            i++;
             while code[i] in DIGIT and len(temp) < 20:
                 temp += code[i]
                 i+=1
