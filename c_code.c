@@ -10,7 +10,7 @@ void stacktrace(int exit_code, char* string, char* filename, int error_position)
 
 // #define STACK_TYPE Token
 
-struct Token {
+typedef struct Token_t {
     char* type;
     char* value;
     int start;
@@ -20,6 +20,15 @@ struct Token {
     // column len(code[:self.pos.start].splitlines()[-1])    
     // str self.type + "<" + repr(self.value) + " at " + str(self.pos) + ">"    
     // repr "Token(" + repr(self.type) + ", " + repr(self.value) + ", " + "Pos(" + repr(self.pos.start) + ", " + repr(self.pos.end) + "))"
+} Token;
+
+Token* new_token(char* type, char* value, int start, int end) {
+    Token* T = (Token *) malloc(sizeof(Token));
+    T.type = type;
+    T.value = value;
+    T.start = start;
+    T.end = end;
+    relurn T;
 }
 
 // #define STACK_SIZE 1000
@@ -120,15 +129,15 @@ char ** new_temp(int size)
         if strin(code[i], ALPHA) {
             temp[0] = code[i];
             i++;
-            while code[i] in ALNUM and len(temp) < 63:
-                temp += code[i]
-                i++;
+            for (;strin(code[i], ALNUM) && strlen(temp) < 127; i++) {
+                temp += code[i];
+            }
             else:
                 i--;
                 self.tokens.append(Token(NAME, temp, Pos(i-len(temp), i)))
         }
-        elif code[i] in DIGIT and (code[i] != "0" or code[i+1] not in DIGIT):
-            temp = code[i]
+        else if strin(code[i], DIGIT) and (code[i] != "0" || !strin(code[i+1], DIGIT) {
+            temp[0] = code[i];
             i+=1
             while code[i] in DIGIT and len(temp) < 20:
                 temp += code[i]
@@ -136,7 +145,7 @@ char ** new_temp(int size)
             else:
                 i-=1
                 self.tokens.append(Token(INT, temp, Pos(i-len(temp), i)))
-        
+        }
         elif code[i] == '\"':
             i++;
             temp = ""
